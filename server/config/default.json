@@ -1,0 +1,4 @@
+{
+    "serverPort": 5000,
+    "dbURL": "mongodb+srv://elik:jc4UsCHMgIfefGbv@cloud.aegshed.mongodb.net/?retryWrites=true&w=majority"
+}
