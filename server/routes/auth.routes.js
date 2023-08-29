@@ -1,6 +1,8 @@
 const Router = require("express");
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const config = require("config");
 const { check, validationResult } = require("express-validator");
 const router = new Router();
 
@@ -42,4 +44,36 @@ router.post(
   }
 );
 
+router.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email });
+    console.log(user);
+    if (!user) {
+      return res
+        .status(404)
+        .json({ message: `Пользователь с ${email} не найден` });
+    }
+    const isValidPass = bcrypt.compareSync(password, user.password);
+    if (!isValidPass) {
+      return res.status(400).json({ message: `Неверный пароль` });
+    }
+    const token = jwt.sign({ id: user.id }, config.get("secretKey"), {
+      expiresIn: "1h",
+    });
+    return res.json({
+      token,
+      user: {
+        id: user.id,
+        email: user.email,
+        diskSpace: user.diskSpace,
+        userSpace: user.userSpace,
+        avatar: user.avatar,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    res.send({ message: "server error" });
+  }
+});
 module.exports = router;
