@@ -1,18 +1,22 @@
-import React from "react";
+import React from 'react';
+import Navbar from "./navbar/Navbar";
+import './app.css'
+// import {BrowserRouter, Route, Switch} from "react-router-dom";
+// import Registration from "./registration/Registration";
 
 function App() {
   return (
-    <div
-      style={{
-        display: "flex",
-        height: "100vh",
-        fontSize: "25px",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      <div>0</div>
-    </div>
+      // <BrowserRouter>
+      //     <div className='app'>
+      //         <Navbar/>
+      //         <div className="wrap">
+      //             <Switch>
+      //                 <Route path="/registration" component={Registration}/>
+      //             </Switch>
+      //         </div>
+      //     </div>
+      // </BrowserRouter>
+      <Navbar></Navbar>
   );
 }
 
