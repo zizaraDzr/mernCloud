@@ -7,7 +7,7 @@ class FileController {
     try {
       const { name, type, parent } = req.body;
       const file = new File({ name, type, parent, user: req.user.id });
-      console.log({ file });
+      console.warn("creareDir", { file });
 
       const parentFile = await File.findOne({ _id: parent });
       console.log({ parentFile });
