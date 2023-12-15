@@ -19,6 +19,8 @@ function App() {
   return (
     <BrowserRouter>
       <div className="app">
+   email": "test3@mai.ru",
+  "password": "333"
         <Navbar />
         <div className="wrap">
           {!isAuth ? (
