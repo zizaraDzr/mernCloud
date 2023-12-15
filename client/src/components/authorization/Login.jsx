@@ -8,6 +8,8 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const dispatch = useDispatch();
+  // email": "test3@mai.ru",
+  // "password": "333"
 
   return (
     <div className="authorization">
