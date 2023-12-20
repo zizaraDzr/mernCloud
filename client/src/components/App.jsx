@@ -19,7 +19,7 @@ function App() {
   return (
     <BrowserRouter>
       <div className="app">
-   email": "test3@mai.ru",
+      email": "test3@mail.ru",
   "password": "333"
         <Navbar />
         <div className="wrap">

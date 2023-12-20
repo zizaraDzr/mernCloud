@@ -1,6 +1,6 @@
 const FileService = require("../services/fileService");
-const config = require('config')
-const fs = require('fs')
+const config = require("config");
+const fs = require("fs");
 const User = require("../models/User");
 const File = require("../models/File");
 
@@ -48,48 +48,103 @@ class FileController {
 
   async uploadFile(req, res) {
     try {
-        const file = req.files.file
+      const file = req.files.file;
+      console.log('fileController uploadFile', file)
 
-        const parent = await File.findOne({user: req.user.id, _id: req.body.parent})
-        const user = await User.findOne({_id: req.user.id})
+      const parent = await File.findOne({
+        user: req.user.id,
+        _id: req.body.parent,
+      });
+      console.log('fileController uploadFile', {parent})
 
-        if (user.usedSpace + file.size > user.diskSpace) {
-            return res.status(400).json({message: 'There no space on the disk'})
+      const user = await User.findOne({ _id: req.user.id });
+
+      if (user.usedSpace + file.size > user.diskSpace) {
+        return res.status(400).json({ message: "There no space on the disk" });
+      }
+
+      user.usedSpace = user.usedSpace + file.size;
+
+      let path;
+      if (parent) {
+        path = `${config.get("filePath")}\\${user._id}\\${parent.path}\\${file.name}`;
+        // path = `${config.get("filePath")}\\${user._id}\\${parent.path}`;
+      } else {
+        path = `${config.get("filePath")}\\${user._id}\\${file.name}`;
+        // path = `${config.get("filePath")}\\${user._id}`;
+      }
+      console.log('fileController uploadFile', {path})
+
+      if (fs.existsSync(path)) {
+        return res.status(400).json({ message: "File already exist" });
+      }
+      console.log('fileController uploadFile', {path})
+      file.mv(path);
+
+      const type = file.name.split(".").pop();
+      let filePath = file.name
+      if (parent) {
+          // filePath = parent.path + "\\" + file.name
+          filePath = parent.path 
+      }
+      console.log('fileController uploadFile', {filePath})
+      const dbFile = new File({
+        name: file.name,
+        type,
+        size: file.size,
+        path: filePath,
+        parent: parent?._id,
+        user: user._id,
+      });
+
+      await dbFile.save();
+      await user.save();
+
+      res.json(dbFile);
+    } catch (e) {
+      console.log(e);
+      return res.status(500).json({ message: "Upload error" });
+    }
+  }
+  async downloadFile(req, res) {
+    console.log(this)
+    try {
+      const file = await File.findOne({ _id: req.query.id, user: req.user.id });
+
+      console.log("filecontroller downloadFile", { file });
+
+      let path = ''
+      if (file.path && file.type !== 'dir' && file.path !== file.name) {
+        path = config.get("filePath") + "\\" + req.user.id + "\\" + file.path + "\\" + file.name;
+      } else {
+        path = config.get("filePath") + "\\" + req.user.id + "\\" + file.path;
+      }
+
+        console.log("filecontroller downloadFile", {path} )
+      if (fs.existsSync(path)) {
+        return res.download(path, file.name);
+      }
+      return res.status(400).json({ message: "Download error" });
+    } catch (e) {
+      console.log(e);
+      res.status(500).json({ message: "Download error" });
+    }
+  }
+  async deleteFile(req, res) {
+    try {
+        const file = await File.findOne({_id: req.query.id, user: req.user.id})
+        console.log({file})
+        if (!file) {
+            return res.status(400).json({message: 'file not found'})
         }
-
-        user.usedSpace = user.usedSpace + file.size
-
-        let path;
-        if (parent) {
-            path = `${config.get('filePath')}\\${user._id}\\${parent.path}\\${file.name}`
-        } else {
-            path = `${config.get('filePath')}\\${user._id}\\${file.name}`
-        }
-
-        if (fs.existsSync(path)) {
-            return res.status(400).json({message: 'File already exist'})
-        }
-        file.mv(path)
-
-        const type = file.name.split('.').pop()
-        const dbFile = new File({
-            name: file.name,
-            type,
-            size: file.size,
-            path: parent?.path,
-            parent: parent?._id,
-            user: user._id
-        })
-
-        await dbFile.save()
-        await user.save()
-
-        res.json(dbFile)
+        FileService.deleteFile(file, req, res)
+        await file.deleteOne()
+        return res.json({message: 'File was deleted'})
     } catch (e) {
         console.log(e)
-        return res.status(500).json({message: "Upload error"})
+        return res.status(400).json({message: 'Dir is not empty'})
     }
-}
+  }
 }
 
 module.exports = new FileController();

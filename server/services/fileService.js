@@ -20,6 +20,24 @@ class FileService {
       }
     });
   }
+  deleteFile(file, req) {
+    const path = this.getPath(file,req)
+    if (file.type === 'dir') {
+        fs.rmdirSync(path)
+    } else {
+        fs.unlinkSync(path)
+    }
+}
+
+  getPath(file,req) {
+    // let path = ''
+        if (file.path && file.type !== 'dir' && file.path !== file.name) {
+          return config.get("filePath") + "\\" + req.user.id + "\\" + file.path + "\\" + file.name;
+        } else {
+          return config.get("filePath") + "\\" + req.user.id + "\\" + file.path;
+        }
+      // return config.get('filePath') + '\\' + file.user + '\\' + file.path
+  }
 }
 
 module.exports = new FileService();

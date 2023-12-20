@@ -46,8 +46,8 @@ export const setPopupDisplay = (display) => ({
   payload: display,
 });
 export const pushToStack = (dir) => ({ type: PUSH_TO_STACK, payload: dir });
-// export const deleteFileAction = (dirId) => ({
-//   type: DELETE_FILE,
-//   payload: dirId,
-// });
+export const deleteFileAction = (dirId) => ({
+  type: DELETE_FILE,
+  payload: dirId,
+});
 // export const setFileView = (payload) => ({ type: SET_VIEW, payload });
