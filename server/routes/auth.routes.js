@@ -48,10 +48,6 @@ router.post(
   }
 );
 
-// {
-//   "email": "test3@mai.ru",
-//   "password": "333"
-// }
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
