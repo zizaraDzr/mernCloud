@@ -50,4 +50,4 @@ export const deleteFileAction = (dirId) => ({
   type: DELETE_FILE,
   payload: dirId,
 });
-// export const setFileView = (payload) => ({ type: SET_VIEW, payload });
+export const setFileView = (payload) => ({ type: SET_VIEW, payload });
