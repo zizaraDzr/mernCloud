@@ -8,11 +8,13 @@ const fileRouter = require("./routes/file.routes");
 const app = express();
 const PORT = config.get("serverPort");
 const DBURL = config.get("dbURL");
+const staticFiles = config.get("staticPath");
 const corsMiddleware = require("./middleware/cors.middleware");
 
 app.use(fileUpload({}))
 app.use(corsMiddleware);
 app.use(express.json());
+app.use(express.static(staticFiles))
 app.use("/api/auth", authRouter);
 app.use("/api/files", fileRouter);
 
