@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  nginx:
+    build:
+      context: ./nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - client
+      - server
+
+  client:
+    build:
+      context: ./client
+    expose:
+      - "3000"  # Порт, на котором работает фронтенд
+    volumes:
+      - ./client:/app
+
+  server:
+    build:
+      context: ./server
+    expose:
+      - "5000"  # Порт, на котором работает бекенд
+    volumes:
+      - ./server:/app
